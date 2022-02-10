@@ -22,8 +22,8 @@ SAVE_BASE_DIR = Path("./backup")
 
 
 class GitProvider(Enum):
-    gitlab = 1
-    github = 2
+    gitlab = auto()
+    github = auto()
 
 
 @dataclass
@@ -110,8 +110,6 @@ def is_path_exists_or_creatable(pathname: str) -> bool:
 
 
 def mirror(repo_name: str, repo_url: str, to_path: Path, username: str, token: str):
-    """ Mirrors a githug repo and saves to filesystem safely. """
-
     parsed = urllib.parse.urlparse(repo_url)
     modified = list(parsed)
     modified[1] = "{username}:{token}@{netloc}".format(
@@ -143,7 +141,6 @@ def mirror(repo_name: str, repo_url: str, to_path: Path, username: str, token: s
 
 
 def get_json_github(url: str, token: str) -> dict:
-    """ Makes authorized http req and returns the result. """
     while True:
         response = requests.get(
             url, headers={"Authorization": "token {0}".format(token)}
@@ -157,10 +154,6 @@ def get_json_github(url: str, token: str) -> dict:
 
 
 def backup(config: Config) -> bool:
-    """ Runs the backup subroutine based on the provided configuration.
-    Returns true if routine completed successfully.
-    """
-
     if not validate_config(config):
         print("Config invalid: {0}".format(str(config)), file=sys.stderr)
         return False
@@ -177,8 +170,6 @@ def backup(config: Config) -> bool:
 
 
 def backup_github(config: Config) -> bool:
-    """ Routine to backup from Github. Only call from main backup subroutine. """
-
     user = next(get_json_github(config.host + "user", config.token))
     username = user["login"]
 
@@ -206,7 +197,6 @@ def backup_github(config: Config) -> bool:
 
 
 def get_json_gitlab(url: str, token: str) -> dict:
-    """ Makes authorized http req and returns the result. """
     while True:
         response = requests.get(
             url, headers={"PRIVATE-TOKEN": str(token)}
@@ -220,7 +210,6 @@ def get_json_gitlab(url: str, token: str) -> dict:
 
 
 def backup_gitlab(config: Config) -> bool:
-    """ Routine to backup from gitlab. Only call from main backup subroutine. """
 
     user = next(get_json_gitlab(config.host + "user/", config.token))
     username = user['username']
@@ -249,7 +238,6 @@ def backup_gitlab(config: Config) -> bool:
 
 
 def parse_config(config: dict) -> Config:
-    """ Parses dict read from config json into a config obj """
 
     token = config['token']
     directory = Path(config['directory']) if config.get('directory', None) is not None else Path("./")
@@ -278,10 +266,6 @@ def parse_config(config: dict) -> Config:
 
 
 def validate_config(config: Config) -> bool:
-    """ Checks whether the provided config is valid.
-    Returns true if valid.
-    """
-
     if not config.token:
         return False
 
