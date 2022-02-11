@@ -10,13 +10,11 @@ setup(
     url='https://github.com/llalon/git-repo-backup',
     author='llalon',
     install_requires=['requests'],
-    scripts=['github-backup.py'],
     zip_safe=True,
-    packages=['git-repo-backup'],
-    package_dir={'git-repo-backup': 'src'},
+    packages=['src'],
     entry_points={
         'console_scripts': [
-            'git-repo-backup = git-repo-backup.main:main',
+            'git-repo-backup=src.app:main',
         ],
     }
 )
