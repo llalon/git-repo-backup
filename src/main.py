@@ -8,7 +8,6 @@ from gitlab import backup as gitlab
 from github import backup as github
 from filehandler import mkdir
 
-
 def backup(config: Config) -> bool:
     if not validate_config(config):
         print("Config invalid: {0}".format(str(config)), file=sys.stderr)
@@ -27,14 +26,23 @@ def backup(config: Config) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(description="Backup Git repositories")
-    parser.add_argument("config", metavar="CONFIG", help="The configuration file")
+    parser.add_argument("config", metavar="CONFIG", help="The configuration file", default=None, nargs='?')
     args = parser.parse_args()
 
-    with open(args.config, "r") as f:
-        configs = json.loads(f.read())
+    if args.config is None:
+        configs = json.load(sys.stdin)
+    else:
+        with open(args.config, "r") as f:
+            configs = json.loads(f.read())
+
+    if len(configs) == 0 or configs is None:
+        print("ERROR: in-valid config", file=sys.stderr)
+        sys.exit(0)
 
     for config in configs:
         backup(parse_config(config))
+
+    sys.exit(1)
 
 
 if __name__ == '__main__':
