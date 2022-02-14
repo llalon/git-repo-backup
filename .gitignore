@@ -130,3 +130,7 @@ dmypy.json
 
 # Config
 config.json
+
+.idea/
+
+backup/
