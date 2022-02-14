@@ -46,6 +46,6 @@ def parse_config(config: dict) -> Config:
         method = None
 
     # Append base path
-    directory_full = Path(settings.SAVE_BASE_DIR, directory)
+    directory_full = Path(settings.get_save_dir_from_env(), directory)
 
     return Config(token, owners, directory_full, method, repos, host)

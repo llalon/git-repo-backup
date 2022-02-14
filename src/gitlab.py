@@ -1,9 +1,10 @@
-from config import Config, GitProvider
+from config import Config
 import requests
 from filehandler import mkdir
 from gitlib import check_name, mirror
 from pathlib import Path
 import json
+from logger import log_message, log_error
 
 DEFAULT_HOST = "https://gitlab.com/api/v4/"
 
@@ -19,6 +20,11 @@ def backup(config: Config) -> bool:
     for page in get_json(config.host + "projects?membership=true", config.token):
         for project in page:
             name = check_name(project["path"])
+
+            if name is None:
+                log_error("Skipping... Invalid name: '{0}'".format(project["path"]))
+                continue
+
             owner = check_name(project["namespace"]["path"])
             clone_url = project["http_url_to_repo"]
 
@@ -33,6 +39,8 @@ def backup(config: Config) -> bool:
 
             owner_path = Path(config.directory, Path(owner))
             mkdir(owner_path)
+
+            log_message("Backing up repo: '{0}'".format(clone_url))
 
             mirror(name, clone_url, owner_path, username, config.token)
 
