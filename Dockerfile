@@ -14,6 +14,7 @@ COPY src/ ./
 RUN stickytape main.py --add-python-path . --output-file /app/git-repo-backup.py
 
 FROM base AS final
+ENV BACKUP_DIR="/backup"
 COPY --from=build /app/git-repo-backup.py /bin/git-repo-backup.py
 RUN chmod +x /bin/git-repo-backup.py
 
