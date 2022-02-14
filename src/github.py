@@ -1,8 +1,9 @@
-from config import Config, GitProvider
+from config import Config
 import requests
 from filehandler import mkdir
 from gitlib import check_name, mirror
 from pathlib import Path
+from logger import log_message, log_error
 
 DEFAULT_HOST = "https://api.github.com/"
 
@@ -21,6 +22,10 @@ def backup(config: Config) -> bool:
             owner = check_name(repo["owner"]["login"])
             clone_url = repo["clone_url"]
 
+            if name is None:
+                log_error("Skipping... Invalid name: '{0}'".format(repo["name"]))
+                continue
+
             # Check if this one is in the whitelist, or if whitelist is empty allow
             if not (not config.owners or config.owners is None):
                 if owner not in config.owners:
@@ -32,6 +37,8 @@ def backup(config: Config) -> bool:
 
             owner_path = Path(config.directory, Path(owner))
             mkdir(owner_path)
+
+            log_message("Backing up repo: '{0}'".format(clone_url))
 
             mirror(name, clone_url, owner_path, username, config.token)
 

@@ -7,7 +7,7 @@ from filehandler import mkdir
 
 def check_name(name: str):
     if not re.match(r"^\w[-\.\w]*$", name):
-        raise RuntimeError("invalid name '{0}'".format(name))
+        return None
     return name
 
 

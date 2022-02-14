@@ -2,11 +2,11 @@ import sys
 
 
 def log_message(message: str):
-    log("INFO: " + str(message) + "\n")
+    log("INFO: " + str(message))
 
 
 def log_error(message: str):
-    log("ERROR: " + str(message) + "\n")
+    log("ERROR: " + str(message))
 
 
 def log(message: str):
