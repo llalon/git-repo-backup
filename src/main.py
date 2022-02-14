@@ -7,14 +7,16 @@ import sys
 from gitlab import backup as gitlab
 from github import backup as github
 from filehandler import mkdir
+from logger import log_error, log_message
+
 
 def backup(config: Config) -> bool:
     if not validate_config(config):
-        print("Config invalid: {0}".format(str(config)), file=sys.stderr)
+        log_error("Config invalid: {0}".format(str(config)))
         return False
 
     if mkdir(config.directory):
-        print("Created directory: {0}".format(config.directory), file=sys.stderr)
+        log_message("Created directory: {0}".format(config.directory))
 
     if config.method == GitProvider.github:
         return github(config)
@@ -36,7 +38,7 @@ def main():
             configs = json.loads(f.read())
 
     if len(configs) == 0 or configs is None:
-        print("ERROR: in-valid config", file=sys.stderr)
+        log_error("In-valid config")
         sys.exit(0)
 
     for config in configs:
