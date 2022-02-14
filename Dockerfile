@@ -1,4 +1,4 @@
-#TAG docker.io/llalon/github-backup
+#TAG docker.io/llalon/git-repo-backup
 FROM debian:bullseye-slim AS base
 
 WORKDIR /tmp
