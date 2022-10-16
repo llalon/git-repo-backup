@@ -2,12 +2,13 @@
 
 import json
 import argparse
-from config import Config, GitProvider, validate_config, parse_config
 import sys
-from gitlab import backup as gitlab
-from github import backup as github
-from filehandler import mkdir
-from logger import log_error, log_message
+
+from git_repo_backup.config import Config, GitProvider, validate_config, parse_config
+from git_repo_backup.gitlab import backup as gitlab
+from git_repo_backup.github import backup as github
+from git_repo_backup.filehandler import mkdir
+from git_repo_backup.logger import log_error, log_message
 
 
 def backup(config: Config) -> bool:
@@ -30,6 +31,8 @@ def main():
     parser = argparse.ArgumentParser(description="Backup Git repositories")
     parser.add_argument("config", metavar="CONFIG", help="The configuration file", default=None, nargs='?')
     args = parser.parse_args()
+
+    sys.exit(1)
 
     if args.config is None:
         configs = json.load(sys.stdin)

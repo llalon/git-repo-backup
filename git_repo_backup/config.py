@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
 from enum import Enum, auto
-from filehandler import is_path_exists_or_creatable
-import settings
+
+import git_repo_backup.settings
+from git_repo_backup.filehandler import is_path_exists_or_creatable
 
 
 class GitProvider(Enum):

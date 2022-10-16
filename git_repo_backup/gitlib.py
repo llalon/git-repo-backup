@@ -1,8 +1,9 @@
 import re
 import subprocess
-from pathlib import Path
 import urllib.parse
-from filehandler import mkdir
+from pathlib import Path
+
+from git_repo_backup.filehandler import mkdir
 
 
 def check_name(name: str):

@@ -1,11 +1,13 @@
-from config import Config
 import requests
-from filehandler import mkdir
-from gitlib import check_name, mirror
 from pathlib import Path
-from logger import log_message, log_error
+import json
 
-DEFAULT_HOST = "https://api.github.com/"
+from git_repo_backup.config import Config
+from git_repo_backup.logger import log_message, log_error
+from git_repo_backup.filehandler import mkdir
+from git_repo_backup.gitlib import check_name, mirror
+
+DEFAULT_HOST = "https://gitlab.com/api/v4/"
 
 
 def backup(config: Config) -> bool:
@@ -13,18 +15,19 @@ def backup(config: Config) -> bool:
     if config.host is None or not config.host:
         config.host = DEFAULT_HOST
 
-    user = next(get_json(config.host + "user", config.token))
-    username = user["login"]
+    user = next(get_json(config.host + "user/", config.token))
+    username = user['username']
 
-    for page in get_json(config.host + "user/repos", config.token):
-        for repo in page:
-            name = check_name(repo["name"])
-            owner = check_name(repo["owner"]["login"])
-            clone_url = repo["clone_url"]
+    for page in get_json(config.host + "projects?membership=true", config.token):
+        for project in page:
+            name = check_name(project["path"])
 
             if name is None:
-                log_error("Skipping... Invalid name: '{0}'".format(repo["name"]))
+                log_error("Skipping... Invalid name: '{0}'".format(project["path"]))
                 continue
+
+            owner = check_name(project["namespace"]["path"])
+            clone_url = project["http_url_to_repo"]
 
             # Check if this one is in the whitelist, or if whitelist is empty allow
             if not (not config.owners or config.owners is None):
@@ -48,10 +51,10 @@ def backup(config: Config) -> bool:
 def get_json(url: str, token: str) -> dict:
     while True:
         response = requests.get(
-            url, headers={"Authorization": "token {0}".format(token)}
+            url, headers={"PRIVATE-TOKEN": str(token)}
         )
         response.raise_for_status()
-        yield response.json()
+        yield json.loads(response.text)
 
         if "next" not in response.links:
             break
